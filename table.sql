@@ -124,4 +124,56 @@ CREATE TABLE UserReport (
     ReportTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO Users (FirstName, LastName, Email, Password, country, Phone_no, Telegram_userName, passport)
+VALUES ('John12', 'Doe', 'john12doe@example.com', 'password123', 'USA', 1234567890, 'johndoe', 'ABC123XYZ');
 
+INSERT INTO Users (FirstName, LastName, Email, Password, country, Phone_no, Telegram_userName, passport)
+VALUES ('Jane', 'Smith', 'janesmith@example.com', 'pass1234', 'Canada', 9543210, 'janesmith', 'DEF456UVW');
+
+
+INSERT INTO Item (Title, Description, ImagePath, item_Status, Category, StartPrice, AuctionStatus, StartDate, UserID)
+VALUES ('Antique Chair', 'Beautiful antique chair in excellent condition.', 'chair.jpg',  'Available', 'Furniture', 500.00, 'Active', '2024-01-17 10:00:00', 1);
+
+INSERT INTO Item (Title, Description, ImagePath, item_Status, Category, StartPrice, AuctionStatus, StartDate, UserID)
+VALUES ('iPhone 12', 'Brand new iPhone 12, still in the box.', 'iphone.jpg', 'Available', 'Electronics', 1000.00, 'Active', '2024-01-17 11:00:00', 2);
+
+
+INSERT INTO Sellers (UserID, ItemID)
+VALUES (1, 1);
+
+INSERT INTO Sellers (UserID, ItemID)
+VALUES (2, 2);
+
+
+
+INSERT INTO Admins (FirstName, LastName, Role, Email, Password)
+VALUES ('Admin', 'Smith', 'Super Admin', 'admin@example.com', 'adminpass123');
+
+
+INSERT INTO Buyer (UserID, ItemID)
+VALUES (1, 2);
+
+INSERT INTO Buyer (UserID, ItemID)
+VALUES (2, 1);
+
+
+
+INSERT INTO Bid (ItemID, UserID, BidAmount, MinIncrement, BidTime)
+VALUES (1, 2, 550.00, 10.00, '2024-01-17 10:30:00');
+
+INSERT INTO Bid (ItemID, UserID, BidAmount, MinIncrement, BidTime)
+VALUES (2, 1, 1050.00, 10.00, '2024-01-17 11:30:00');
+
+
+INSERT INTO Notification (Message, notificationTime, UserID)
+VALUES ('Your item has been sold!', '2024-01-17 12:00:00', 1);
+
+INSERT INTO Notification (Message, notificationTime, UserID)
+VALUES ('New bid on your item!', '2024-01-17 12:30:00', 2);
+
+
+INSERT INTO comments (comment_message, commentTime, UserID)
+VALUES ('Great item!', '2024-01-17 13:00:00', 1);
+
+INSERT INTO comments (comment_message, commentTime, UserID)
+VALUES ('Im interested in buying this.', '2024-01-17 13:30:00', 2);
