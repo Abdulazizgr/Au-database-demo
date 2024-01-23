@@ -1,11 +1,8 @@
-create database try1 ;
-use try1;
-
 
 
 CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
-    FirstName VARCHAR(50) NOT NULL UNIQUE,
+    FirstName VARCHAR(50) NOT NULL ,
     LastName VARCHAR(50) NOT NULL,
     Email VARCHAR(50) NOT NULL UNIQUE,
     Password VARCHAR(50) NOT NULL,
@@ -14,7 +11,9 @@ CREATE TABLE Users (
     Telegram_userName VARCHAR(50),
     passport VARCHAR(255),
     userState ENUM('Active', 'suspended', 'banned') NOT NULL DEFAULT 'Active',
-    RegistrationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    subscription_state ENUM('active', 'inactive') NOT NULL DEFAULT 'inactive',
+    RegistrationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ProfileImagePath VARCHAR(255)
 );
 
 
@@ -27,7 +26,7 @@ CREATE TABLE Item (
     item_Status varchar(50),
     Category VARCHAR(50) NOT NULL,
     StartPrice DECIMAL(10, 2) NOT NULL,
-    AuctionStatus ENUM('Active', 'Sold', 'Expired') NOT NULL,
+    AuctionStatus ENUM('Active', 'Sold', 'Expired','pending') NOT NULL default 'Active',
     StartDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     soldDate DATETIME DEFAULT NULL,
     UserID INT,
@@ -35,14 +34,7 @@ CREATE TABLE Item (
 );
 
 
--- Sellers Table
-CREATE TABLE Sellers (
-    SellerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each seller
-    UserID INT NOT NULL, -- Foreign key referencing the UserID in the Users table
-    ItemID INT, -- Foreign key referencing the ItemID in the Item table
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE, -- Constraint to ensure the user exists
-    FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE SET NULL -- Constraint to ensure the item exists (can be null if item is removed)
-);
+
 
 
 -- Admins Table
@@ -56,14 +48,6 @@ CREATE TABLE Admins (
     RegistrationDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Buyer Table
-CREATE TABLE Buyer (
-    BuyerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each buyer
-    UserID INT NOT NULL, -- Foreign key referencing the UserID in the Users table
-    ItemID INT NOT NULL, -- Foreign key referencing the ItemID in the Items table
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE, -- Constraint to ensure the user exists
-    FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE CASCADE -- Constraint to ensure the item exists
-);
 
 
 -- Bid Table
@@ -78,6 +62,7 @@ CREATE TABLE Bid (
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE -- Constraint to ensure the buyer exists
 );
 
+
 -- Notification Table
 CREATE TABLE Notification (
     NotificationID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each notification
@@ -88,32 +73,38 @@ CREATE TABLE Notification (
 
 );
 
-create table  comments(
 
-commentID int auto_increment primary key,
-comment_message text,
-commentTime timestamp ,
-UserID INT,
-    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL
+
+CREATE TABLE subscriptions (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  UserID INT,
+  subscription_name ENUM('weekly', '3 monthly', 'yearly') ,
+  start_date DATE,
+  end_date DATE,
+  price DECIMAL(10, 2),
+  subscription_status ENUM('active', 'inactive')DEFAULT 'inactive',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
-
-
-
-CREATE TABLE ReportTable (
-    ReportId INT AUTO_INCREMENT,
-    ReportDate DATETIME,
-    ReportText VARCHAR(1000),
-    PRIMARY KEY (ReportId)
+-- Buyer Table
+CREATE TABLE Buyer (
+    BuyerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each buyer
+    UserID INT NOT NULL, -- Foreign key referencing the UserID in the Users table
+    ItemID INT NOT NULL, -- Foreign key referencing the ItemID in the Items table
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE, -- Constraint to ensure the user exists
+    FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE CASCADE -- Constraint to ensure the item exists
 );
 
-
-
-
-
-
-DROP TABLE IF EXISTS UserReport;
-
+-- Sellers Table
+CREATE TABLE Sellers (
+    SellerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each seller
+    UserID INT NOT NULL, -- Foreign key referencing the UserID in the Users table
+    ItemID INT, -- Foreign key referencing the ItemID in the Item table
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE, -- Constraint to ensure the user exists
+    FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE SET NULL -- Constraint to ensure the item exists (can be null if item is removed)
+);
 CREATE TABLE UserReport (
     ReportID INT AUTO_INCREMENT PRIMARY KEY,
     Country VARCHAR(50),
@@ -124,56 +115,50 @@ CREATE TABLE UserReport (
     ReportTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO Users (FirstName, LastName, Email, Password, country, Phone_no, Telegram_userName, passport)
-VALUES ('John12', 'Doe', 'john12doe@example.com', 'password123', 'USA', 1234567890, 'johndoe', 'ABC123XYZ');
+CREATE TABLE BidReport (
+	ReportID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT,
+    ItemID INT,
+    ItemTitle VARCHAR(50),
+    Category VARCHAR(50),
+    MinBid DECIMAL(10, 2),
+    MaxBid DECIMAL(10, 2)
+    
+);
+CREATE TABLE AdminReport (
+	 ReportID INT AUTO_INCREMENT PRIMARY KEY,
+    TotalAdmins INT,
+    ManagerAdmins INT,
+    UserAdmins INT,
+    ItemAdmins INT
+);
+CREATE TABLE ItemReport (
+    ReportID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID int,
+    ItemID INT,
+    ItemTitle VARCHAR(255),
+    Category VARCHAR(50),
+    ItemStatePending INT,
+    ItemStateApproved INT,
+    ItemStateRejected INT,
+    AuctionStatusActive INT,
+    AuctionStatusSold INT,
+    AuctionStatusExpired INT,
+    AuctionStatusPending INT
+);
 
-INSERT INTO Users (FirstName, LastName, Email, Password, country, Phone_no, Telegram_userName, passport)
-VALUES ('Jane', 'Smith', 'janesmith@example.com', 'pass1234', 'Canada', 9543210, 'janesmith', 'DEF456UVW');
-
-
-INSERT INTO Item (Title, Description, ImagePath, item_Status, Category, StartPrice, AuctionStatus, StartDate, UserID)
-VALUES ('Antique Chair', 'Beautiful antique chair in excellent condition.', 'chair.jpg',  'Available', 'Furniture', 500.00, 'Active', '2024-01-17 10:00:00', 1);
-
-INSERT INTO Item (Title, Description, ImagePath, item_Status, Category, StartPrice, AuctionStatus, StartDate, UserID)
-VALUES ('iPhone 12', 'Brand new iPhone 12, still in the box.', 'iphone.jpg', 'Available', 'Electronics', 1000.00, 'Active', '2024-01-17 11:00:00', 2);
-
-
-INSERT INTO Sellers (UserID, ItemID)
-VALUES (1, 1);
-
-INSERT INTO Sellers (UserID, ItemID)
-VALUES (2, 2);
-
-
-
-INSERT INTO Admins (FirstName, LastName, Role, Email, Password)
-VALUES ('Admin', 'Smith', 'Super Admin', 'admin@example.com', 'adminpass123');
-
-
-INSERT INTO Buyer (UserID, ItemID)
-VALUES (1, 2);
-
-INSERT INTO Buyer (UserID, ItemID)
-VALUES (2, 1);
-
-
-
-INSERT INTO Bid (ItemID, UserID, BidAmount, MinIncrement, BidTime)
-VALUES (1, 2, 550.00, 10.00, '2024-01-17 10:30:00');
-
-INSERT INTO Bid (ItemID, UserID, BidAmount, MinIncrement, BidTime)
-VALUES (2, 1, 1050.00, 10.00, '2024-01-17 11:30:00');
-
-
-INSERT INTO Notification (Message, notificationTime, UserID)
-VALUES ('Your item has been sold!', '2024-01-17 12:00:00', 1);
-
-INSERT INTO Notification (Message, notificationTime, UserID)
-VALUES ('New bid on your item!', '2024-01-17 12:30:00', 2);
+CREATE TABLE subscription_data (
+  ReportID INT AUTO_INCREMENT PRIMARY KEY,
+  UserID INT,
+  subscription_name ENUM('weekly', '3 monthly', 'yearly'),
+  price DECIMAL(10, 2),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
-INSERT INTO comments (comment_message, commentTime, UserID)
-VALUES ('Great item!', '2024-01-17 13:00:00', 1);
-
-INSERT INTO comments (comment_message, commentTime, UserID)
-VALUES ('Im interested in buying this.', '2024-01-17 13:30:00', 2);
+CREATE TABLE SubscriptionReport (
+    ReportID INT AUTO_INCREMENT PRIMARY KEY,
+    SubscriptionName ENUM('weekly', '3 monthly', 'yearly'),
+    UserCount INT,
+    TotalPrice DECIMAL(10, 2)
+);
