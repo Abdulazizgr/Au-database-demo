@@ -1,5 +1,4 @@
 
-
 CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     FirstName VARCHAR(50) NOT NULL ,
@@ -69,6 +68,8 @@ CREATE TABLE Notification (
 	Message TEXT NOT NULL, -- Message content for the seller
     notificationTime Timestamp  NOT NULL, -- Date and time when the notification was sent
 	UserID INT,
+    adminID int,
+      FOREIGN KEY (Adminid) REFERENCES Admins(AdminID) ON DELETE SET NULL,
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE SET NULL
 
 );
@@ -89,22 +90,25 @@ CREATE TABLE subscriptions (
 );
 
 -- Buyer Table
-CREATE TABLE Buyer (
-    BuyerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each buyer
+CREATE TABLE Bider (
+    BiderID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each buyer
     UserID INT NOT NULL, -- Foreign key referencing the UserID in the Users table
     ItemID INT NOT NULL, -- Foreign key referencing the ItemID in the Items table
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE, -- Constraint to ensure the user exists
     FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE CASCADE -- Constraint to ensure the item exists
 );
 
--- Sellers Table
-CREATE TABLE Sellers (
-    SellerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each seller
+CREATE TABLE buyer (
+    BuyerID INT AUTO_INCREMENT PRIMARY KEY, -- Unique identifier for each buyer
     UserID INT NOT NULL, -- Foreign key referencing the UserID in the Users table
-    ItemID INT, -- Foreign key referencing the ItemID in the Item table
+    ItemID INT NOT NULL, -- Foreign key referencing the ItemID in the Items table
+    BiderID int,
+      FOREIGN KEY (BiderID) REFERENCES Bider(BiderID) ON DELETE CASCADE,
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE, -- Constraint to ensure the user exists
-    FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE SET NULL -- Constraint to ensure the item exists (can be null if item is removed)
+    FOREIGN KEY (ItemID) REFERENCES Item(ItemID) ON DELETE CASCADE -- Constraint to ensure the item exists
 );
+
+
 CREATE TABLE UserReport (
     ReportID INT AUTO_INCREMENT PRIMARY KEY,
     Country VARCHAR(50),
@@ -112,7 +116,9 @@ CREATE TABLE UserReport (
     SuspendedUsers INT,
     BannedUsers INT,
     TotalUsers INT,
-    ReportTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ReportTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    AdminID int,
+  FOREIGN KEY (AdminID) REFERENCES admins(AdminID)
 );
 
 CREATE TABLE BidReport (
@@ -122,15 +128,18 @@ CREATE TABLE BidReport (
     ItemTitle VARCHAR(50),
     Category VARCHAR(50),
     MinBid DECIMAL(10, 2),
-    MaxBid DECIMAL(10, 2)
-    
+    MaxBid DECIMAL(10, 2),
+    AdminID int,
+    FOREIGN KEY (AdminID) REFERENCES admins(AdminID)
 );
 CREATE TABLE AdminReport (
 	 ReportID INT AUTO_INCREMENT PRIMARY KEY,
     TotalAdmins INT,
     ManagerAdmins INT,
     UserAdmins INT,
-    ItemAdmins INT
+    ItemAdmins INT,
+    AdminID int,
+    FOREIGN KEY (AdminID) REFERENCES admins(AdminID)
 );
 CREATE TABLE ItemReport (
     ReportID INT AUTO_INCREMENT PRIMARY KEY,
@@ -144,7 +153,9 @@ CREATE TABLE ItemReport (
     AuctionStatusActive INT,
     AuctionStatusSold INT,
     AuctionStatusExpired INT,
-    AuctionStatusPending INT
+    AuctionStatusPending INT,
+    AdminID int,
+    FOREIGN KEY (AdminID) REFERENCES admins(AdminID)
 );
 
 CREATE TABLE subscription_data (
@@ -152,7 +163,9 @@ CREATE TABLE subscription_data (
   UserID INT,
   subscription_name ENUM('weekly', '3 monthly', 'yearly'),
   price DECIMAL(10, 2),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  AdminID int,
+  FOREIGN KEY (AdminID) REFERENCES admins(AdminID)
 );
 
 
@@ -160,7 +173,9 @@ CREATE TABLE SubscriptionReport (
     ReportID INT AUTO_INCREMENT PRIMARY KEY,
     SubscriptionName ENUM('weekly', '3 monthly', 'yearly'),
     UserCount INT,
-    TotalPrice DECIMAL(10, 2)
+    TotalPrice DECIMAL(10, 2),
+    AdminID int
+    ,FOREIGN KEY (AdminID) REFERENCES admins(AdminID)
 );
 
 
