@@ -162,3 +162,46 @@ CREATE TABLE SubscriptionReport (
     UserCount INT,
     TotalPrice DECIMAL(10, 2)
 );
+
+
+-- Insert into Users table
+INSERT INTO Users (FirstName, LastName, Email, Password, country, Phone_no, Telegram_userName, passport)
+VALUES ('John', 'Doe', 'johndoe1@example.com', 'password123', 'USA', 1237890, 'johndoe', 'ABCD1234');
+
+INSERT INTO Users (FirstName, LastName, Email, Password, country, Phone_no, Telegram_userName, passport)
+VALUES ('Jane', 'Smith', 'janesmith1@example.com', 'password456', 'Canada', 9543210, 'janesmith', 'EFGH5678');
+
+-- Insert into Item table
+INSERT INTO Item (Title, Description, ImagePath, item_Status, Category, StartPrice, UserID)
+VALUES ('Item 12', 'Description of Item 1', 'image1.jpg', 'active', 'Electronics', 100.00, 1);
+
+INSERT INTO Item (Title, Description, ImagePath, item_Status, Category, StartPrice, UserID)
+VALUES ('Item 21', 'Description of Item 2', 'image2.jpg', 'active', 'Clothing', 50.00, 2);
+
+-- Insert into Admins table
+INSERT INTO Admins (FirstName, LastName, Role, Email, Password)
+VALUES ('Admin 1', 'Manager', 'manager', 'admin13@example.com', 'admin123');
+
+INSERT INTO Admins (FirstName, LastName, Role, Email, Password)
+VALUES ('Admin 2', 'User Admin', 'userAdmin', 'admin23@example.com', 'admin456');
+
+-- Insert into Bid table
+INSERT INTO Bid (ItemID, UserID, BidAmount, MinIncrement)
+VALUES (1, 1, 1200.00, 10.00);
+
+INSERT INTO Bid (ItemID, UserID, BidAmount, MinIncrement)
+VALUES (2, 2, 600.00, 10.00);
+
+-- Insert into Notification table
+INSERT INTO Notification (Message, notificationTime, UserID)
+VALUES ('You have a new message.', '2024-01-23 10:00:00', 1);
+
+INSERT INTO Notification (Message, notificationTime, UserID)
+VALUES ('Your item has been sold.', '2024-01-23 11:00:00', 2);
+
+-- Insert into subscriptions table
+INSERT INTO subscriptions (UserID, subscription_name, start_date, end_date, price, subscription_status)
+VALUES (1, 'weekly', '2024-01-01', '2024-01-07', 10.00, 'active');
+
+INSERT INTO subscriptions (UserID, subscription_name, start_date, end_date, price, subscription_status)
+VALUES (2, 'yearly', '2024-01-01', '2025-01-01', 100.00, 'inactive');
